@@ -105,12 +105,20 @@ Matrix & Matrix::operator*=(const Matrix & matrix)
 
 Matrix & Matrix::operator +(const Matrix & matrix)
 {
-	return matrix;
+	return *this;
 }
-														//AICI N AI SCRIS NIMIC
+														
 Matrix & Matrix::operator -(const Matrix & matrix)
 {
+	Matrix result(matrix.m_column, matrix.m_row);
 
+	for (int i = 0; i < m_row; i++)
+		for (int j = 0; j < m_column; j++)
+		{
+			result.m_data[j][i] = matrix.m_data[i][j];
+		}
+
+	return result;
 }
 
 Matrix operator +(const Matrix& matrix1, const Matrix& matrix2)
