@@ -14,6 +14,8 @@ public:
 	Matrix& operator -=(const Matrix & matrix);
 	Matrix& operator *=(const double scalar);
 	Matrix& operator *=(const Matrix& matrix);
+	Matrix& operator +(const Matrix & matrix);
+	Matrix& operator -(const Matrix & matrix);
 	friend Matrix operator +(const Matrix& matrix1, const Matrix& matrix2);
 	friend Matrix operator +(const Matrix& matrix, const double scalar);
 	friend Matrix operator +(const double scalar, const Matrix& matrix);
@@ -23,6 +25,14 @@ public:
 	friend Matrix operator *(const Matrix& matrix1, const Matrix& matrix2);
 	friend Matrix operator *(const Matrix& matrix, const double scalar);
 	friend Matrix operator *(const double scalar, const Matrix& matrix);
+	friend Matrix operator /(const Matrix& matrix, const double scalar);
+	friend Matrix operator /(const double scalar, const Matrix& matrix);
+	friend Matrix operator ^(const Matrix& matrix, int n);
+	Matrix& operator [](const Matrix& matrix);
+	friend bool operator ==(const Matrix& matrix1, const Matrix& matrix2);
+	friend bool operator !=(const Matrix& matrix1, const Matrix& matrix2);
+	friend std::istream& operator >>(std::istream& in,const Matrix& matrix);
+	friend std::ostream& operator <<(std::ostream& out, const Matrix& matrix);
 
 private:
 	int m_row, m_column;
