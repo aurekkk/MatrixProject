@@ -1,4 +1,3 @@
-
 class Matrix {
 public:
 	Matrix(int row = 1, int column = 1);
@@ -31,12 +30,12 @@ public:
 	Matrix& operator [](const Matrix& matrix);
 	friend bool operator ==(const Matrix& matrix1, const Matrix& matrix2);
 	friend bool operator !=(const Matrix& matrix1, const Matrix& matrix2);
-	friend std::istream& operator >>(std::istream& in,const Matrix& matrix);
-	friend std::ostream& operator <<(std::ostream& out, const Matrix& matrix);
+	friend std::istream & operator >>(std::istream& in, const Matrix& matrix);
+	friend std::ostream & operator <<(std::ostream& out, const Matrix& matrix);
 
 private:
 	int m_row, m_column;
 	double **m_data;
 	void AllocMatrix();
-	
+
 };

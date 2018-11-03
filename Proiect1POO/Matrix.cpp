@@ -1,3 +1,5 @@
+#include "pch.h"
+#include <iostream>
 #include "Matrix.hpp"    
 
 Matrix::Matrix(int row, int column)
@@ -26,8 +28,8 @@ Matrix::Matrix(const Matrix & matrix)
 Matrix::~Matrix()
 {
 	for (int i = 0;i < m_row;i++)
-		delete [] m_data[i];
-	delete [] m_data;
+		delete[] m_data[i];
+	delete[] m_data;
 }
 
 
@@ -107,7 +109,7 @@ Matrix & Matrix::operator +(const Matrix & matrix)
 {
 	return *this;
 }
-														
+
 Matrix & Matrix::operator -(const Matrix & matrix)
 {
 	Matrix result(matrix.m_column, matrix.m_row);
@@ -127,7 +129,7 @@ Matrix operator +(const Matrix& matrix1, const Matrix& matrix2)
 
 	Matrix result(matrix1);
 	result += matrix2;
-	
+
 	return result;
 }
 
@@ -144,8 +146,8 @@ Matrix operator +(const double scalar, const Matrix& matrix)
 {
 	Matrix result(matrix); // constructor de copiere
 
-	result += scalar; 
-	
+	result += scalar;
+
 	return result;
 }
 
@@ -179,80 +181,75 @@ Matrix operator -(const double scalar, const Matrix& matrix)
 Matrix operator *(const Matrix& matrix1, const Matrix& matrix2)
 {
 	if (matrix1 != matrix2) throw std::runtime_error("cannot multiply matrix");
-	Matrix m(matrix1);
-	for (int i = 0; i < m_row; i++)
-		for (int j = 0;j < m_column;j++)
+	Matrix result(matrix1);
+	for (int i = 0; i < result.m_row; i++)
+		for (int j = 0;j < result.m_column;j++)
 		{
-			m.m_data[i][j] = 0;
-				for (int k = 0; k < m_column; k++)
-				{
-					m.m_data[i][j] = m.m_data[i][j] + matrix1.m_data[i][k] * matrix2.m_data[k][j];
-				}
+			result.m_data[i][j] = 0;
+			for (int k = 0; k < result.m_column; k++)
+			{
+				result.m_data[i][j] = result.m_data[i][j] + matrix1.m_data[i][k] * matrix2.m_data[k][j];
+			}
 		}
-	return m;
+	return result;
 }
 
 Matrix operator *(const Matrix& matrix, const double scalar)
 {
-	for (int i = 0; i < m_row; i++)
-		for (int j = 0; j < m_column; j++)
-		{
-			matrix.m_data[i][j] *= scalar;
-		}
-	return *this;
+	Matrix result(matrix);
+	result *= scalar;
+	return result;
 }
 
 Matrix operator *(const double scalar, const Matrix& matrix)
 {
-	for (int i = 0; i < m_row; i++)
-		for (int j = 0; j < m_column; j++)
-		{
-			matrix.m_data[i][j] *= scalar;
-		}
-	return *this;
+	Matrix result(matrix);
+	result *= scalar;
+	return result;
 }
 
 Matrix operator /(const Matrix& matrix, const double scalar)
 {
-	Matrix m(matrix);
-	for (int i = 0; i < m_row; i++)
-		for (int j = 0; j < m_column; j++)
+	Matrix result(matrix);
+	for (int i = 0; i < result.m_row; i++)
+		for (int j = 0; j <result.m_column ; j++)
 		{
-			m.m_data[i][j] = matrix.m_data[i][j] / scalar;
+			result.m_data[i][j] = result.m_data[i][j] / scalar;
 		}
-	return m;
+	return result;
 }
 
 Matrix operator /(const double scalar, const Matrix& matrix)
 {
-	Matrix m(matrix);
-	for (int i = 0; i < m_row; i++)
-		for (int j = 0; j < m_column; j++)
+	Matrix result(matrix);
+	for (int i = 0; i < result.m_row; i++)
+		for (int j = 0; j < result.m_column; j++)
 		{
-			m.m_data[i][j] = matrix.m_data[i][j] / scalar;
+			result.m_data[i][j] = result.m_data[i][j] / scalar;
 		}
-	return m;
+	return result;
 }
 
 Matrix operator ^(const Matrix& matrix, int n)
 {
 	if (matrix.m_row != matrix.m_column) throw std::runtime_error("cannot raise matrix");
-	
+
 	int count(n);
-	Matrix m(matrix);
+	Matrix result(matrix);
 	for (int i = 0; i < n; i++)
 	{
-		*this *= m; 
+		result *= result;
 	}
-	
-	
+
+	return result;
+
 }
 
 Matrix & Matrix::operator[](const Matrix & matrix)
 {
 	if (matrix.m_row == 1 || matrix.m_column == 1)
 	{
-		return &matrix.m_data[matrix.m_row][matrix.m_column];
+		return matrix.m_data[matrix.m_row][matrix.m_column];
 	}
 	else
 	{
@@ -274,7 +271,7 @@ bool operator !=(const Matrix& matrix1, const Matrix& matrix2)
 	return !(matrix1 == matrix2);
 }
 
-std::istream & operator>>(std::istream & in,const Matrix & matrix)
+std::istream & operator>>(std::istream & in, const Matrix & matrix)
 {
 	for (int i = 0; i < matrix.m_row; i++)
 		for (int j = 0; j < matrix.m_column; j++)
@@ -299,11 +296,7 @@ std::ostream & operator<<(std::ostream & out, const Matrix & matrix)
 
 void Matrix::AllocMatrix()
 {
-	M = new double*[m_row];
+	m_data = new double*[m_row];
 	for (int i = 0;i < m_row;i++)
-			m_data[i] = new double[m_column];
+		m_data[i] = new double[m_column];
 }
-
-
-
-
