@@ -6,23 +6,33 @@ Matrix::Matrix(int row, int column)
 	: m_row(row)
 	, m_column(column)
 {
-	AllocMatrix();
+	m_data = new int*[m_row];
+	for (int i = 0; i < m_row; i++) {
+		m_data[i] = new int[m_column];
+	}
 	for (int i = 0; i < m_row; i++)
 		for (int j = 0;j < m_column;j++)
 		{
 			if (i == j) m_data[i][j] = 1;
 			else m_data[i][j] = 0;
 		}
+	
 }
 
 Matrix::Matrix(const Matrix & matrix)
 	: m_row(matrix.m_row)
 	, m_column(matrix.m_row)
 {
-	AllocMatrix();
-	for (int i = 0;i < m_row;i++)
-		for (int j = 0;j < m_column;j++)
+	m_data = new int*[m_row];
+	for (int i = 0; i < m_row; i++) {
+		m_data[i] = new int[m_column];
+	}
+
+	for (int i = 0;i < m_row;i++) {
+		for (int j = 0;j < m_column;j++) {
 			m_data[i][j] = matrix.m_data[i][j];
+		}
+	}
 }
 
 Matrix::~Matrix()
@@ -105,8 +115,23 @@ Matrix & Matrix::operator*=(const Matrix & matrix)
 	return *this;
 }
 
-Matrix & Matrix::operator +(const Matrix & matrix)
+Matrix & Matrix::operator=(const Matrix & matrix)
 {
+	if(m_row!= matrix.m_row || m_column !=matrix.m_column)
+			throw std::runtime_error("cannot = matrix");
+
+	for (int i = 0; i < m_row; i++) {
+		for (int j = 0; j < m_column; j++) {
+			m_data[i][j] = matrix.m_data[i][j];
+		}
+	}
+
+	return *this;
+}
+
+Matrix & Matrix::operator +()
+{
+
 	return *this;
 }
 
@@ -128,10 +153,12 @@ Matrix operator +(const Matrix& matrix1, const Matrix& matrix2)
 	if (matrix1 != matrix2) throw std::runtime_error("cannot add matrix");
 
 	Matrix result(matrix1);
+
 	result += matrix2;
 
 	return result;
 }
+
 
 Matrix operator +(const Matrix& matrix, const double scalar)
 {
@@ -245,7 +272,7 @@ Matrix operator ^(const Matrix& matrix, int n)
 
 }
 
-Matrix & Matrix::operator[](const Matrix & matrix)
+/*Matrix & Matrix::operator[](const Matrix & matrix)
 {
 	if (matrix.m_row == 1 || matrix.m_column == 1)
 	{
@@ -260,7 +287,7 @@ Matrix & Matrix::operator[](const Matrix & matrix)
 		return result;
 	}
 }
-
+*/
 bool operator ==(const Matrix& matrix1, const Matrix& matrix2)
 {
 	return matrix1.m_row == matrix2.m_row && matrix1.m_column == matrix2.m_column;
@@ -284,19 +311,12 @@ std::istream & operator>>(std::istream & in, const Matrix & matrix)
 std::ostream & operator<<(std::ostream & out, const Matrix & matrix)
 {
 	for (int i = 0; i < matrix.m_row; i++)
+	{
 		for (int j = 0; j < matrix.m_column; j++)
-		{
-			out << matrix.m_data[i][j] << std::endl;
-		}
+			out << matrix.m_data[i][j] << " ";
+		out << std::endl;
+	}
 
 	return out;
 }
 
-
-
-void Matrix::AllocMatrix()
-{
-	m_data = new double*[m_row];
-	for (int i = 0;i < m_row;i++)
-		m_data[i] = new double[m_column];
-}
