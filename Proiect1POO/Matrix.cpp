@@ -1,14 +1,16 @@
 #include "pch.h"
 #include <iostream>
+#include <fstream>
+#include <string>
 #include "Matrix.hpp"    
 
 Matrix::Matrix(int row, int column)
 	: m_row(row)
 	, m_column(column)
 {
-	m_data = new int*[m_row];
+	m_data = new double*[m_row];
 	for (int i = 0; i < m_row; i++) {
-		m_data[i] = new int[m_column];
+		m_data[i] = new double[m_column];
 	}
 	for (int i = 0; i < m_row; i++)
 		for (int j = 0;j < m_column;j++)
@@ -21,11 +23,11 @@ Matrix::Matrix(int row, int column)
 
 Matrix::Matrix(const Matrix & matrix)
 	: m_row(matrix.m_row)
-	, m_column(matrix.m_row)
+	, m_column(matrix.m_column)
 {
-	m_data = new int*[m_row];
+	m_data = new double*[m_row];
 	for (int i = 0; i < m_row; i++) {
-		m_data[i] = new int[m_column];
+		m_data[i] = new double[m_column];
 	}
 
 	for (int i = 0;i < m_row;i++) {
@@ -110,42 +112,73 @@ Matrix & Matrix::operator*=(const Matrix & matrix)
 	for (int i = 0; i < m_row; i++)
 		for (int j = 0; j < m_column; j++)
 		{
-			m_data[i][j] -= matrix.m_data[i][j];
+			m_data[i][j] *= matrix.m_data[i][j];
 		}
 	return *this;
 }
 
 Matrix & Matrix::operator=(const Matrix & matrix)
 {
-	if(m_row!= matrix.m_row || m_column !=matrix.m_column)
-			throw std::runtime_error("cannot = matrix");
-
-	for (int i = 0; i < m_row; i++) {
-		for (int j = 0; j < m_column; j++) {
-			m_data[i][j] = matrix.m_data[i][j];
+	if (matrix != *this) {
+		m_row = matrix.m_row;
+		m_column = matrix.m_column;
+		for (int i = 0; i < m_row; i++) {
+			for (int j = 0; j < m_column; j++) {
+				m_data[i][j] = matrix.m_data[i][j];
+			}
 		}
+		return *this;
+
+
 	}
+	else {
+		for (int i = 0; i < m_row; i++) {
+			for (int j = 0; j < m_column; j++) {
+				m_data[i][j] = matrix.m_data[i][j];
+			}
+		}
+		return *this;
+	}
+}
 
+Matrix & Matrix::operator+()
+{
 	return *this;
 }
 
-Matrix & Matrix::operator +()
-{
 
-	return *this;
-}
 
-Matrix & Matrix::operator -(const Matrix & matrix)
+
+
+
+
+Matrix & Matrix::operator -()
 {
-	Matrix result(matrix.m_column, matrix.m_row);
+	Matrix result(*this);
 
 	for (int i = 0; i < m_row; i++)
 		for (int j = 0; j < m_column; j++)
 		{
-			result.m_data[j][i] = matrix.m_data[i][j];
+			m_data[j][i] = result.m_data[i][j];
+		}
+
+	return *this;
+}
+
+/*{
+	Matrix result(*this);
+
+	for (int i = 0; i < m_row; i++)
+		for (int j = 0; j < m_column; j++)
+		{
+			result.m_data[j][i] =m_data[i][j];
 		}
 
 	return result;
+}*/
+double * Matrix::operator[](int row)
+{
+	return m_data[row];
 }
 
 Matrix operator +(const Matrix& matrix1, const Matrix& matrix2)
@@ -209,7 +242,7 @@ Matrix operator *(const Matrix& matrix1, const Matrix& matrix2)
 {
 	if (matrix1 != matrix2) throw std::runtime_error("cannot multiply matrix");
 	Matrix result(matrix1);
-	for (int i = 0; i < result.m_row; i++)
+	/*for (int i = 0; i < result.m_row; i++)
 		for (int j = 0;j < result.m_column;j++)
 		{
 			result.m_data[i][j] = 0;
@@ -218,6 +251,8 @@ Matrix operator *(const Matrix& matrix1, const Matrix& matrix2)
 				result.m_data[i][j] = result.m_data[i][j] + matrix1.m_data[i][k] * matrix2.m_data[k][j];
 			}
 		}
+	*/
+	result *= matrix2;
 	return result;
 }
 
@@ -237,6 +272,7 @@ Matrix operator *(const double scalar, const Matrix& matrix)
 
 Matrix operator /(const Matrix& matrix, const double scalar)
 {
+	if (scalar == 0) throw std::runtime_error("cannot divide by 0");
 	Matrix result(matrix);
 	for (int i = 0; i < result.m_row; i++)
 		for (int j = 0; j <result.m_column ; j++)
@@ -248,6 +284,7 @@ Matrix operator /(const Matrix& matrix, const double scalar)
 
 Matrix operator /(const double scalar, const Matrix& matrix)
 {
+	if (scalar == 0) throw std::runtime_error("cannot divide by 0");
 	Matrix result(matrix);
 	for (int i = 0; i < result.m_row; i++)
 		for (int j = 0; j < result.m_column; j++)
@@ -257,37 +294,20 @@ Matrix operator /(const double scalar, const Matrix& matrix)
 	return result;
 }
 
-Matrix operator ^(const Matrix& matrix, int n)
+Matrix operator ^(const Matrix& matrix, const int n)
 {
 	if (matrix.m_row != matrix.m_column) throw std::runtime_error("cannot raise matrix");
 
-	int count(n);
 	Matrix result(matrix);
-	for (int i = 0; i < n; i++)
+	for (int i = 1; i < n; i++)
 	{
-		result *= result;
+		result *= matrix;
 	}
 
 	return result;
 
 }
 
-/*Matrix & Matrix::operator[](const Matrix & matrix)
-{
-	if (matrix.m_row == 1 || matrix.m_column == 1)
-	{
-		return matrix.m_data[matrix.m_row][matrix.m_column];
-	}
-	else
-	{
-		Matrix result(1, matrix.m_column);
-		for (int i = 0; i < matrix.m_column; i++)
-			result.m_data[1][i] = matrix.m_data[m_row][i];
-
-		return result;
-	}
-}
-*/
 bool operator ==(const Matrix& matrix1, const Matrix& matrix2)
 {
 	return matrix1.m_row == matrix2.m_row && matrix1.m_column == matrix2.m_column;
@@ -319,4 +339,5 @@ std::ostream & operator<<(std::ostream & out, const Matrix & matrix)
 
 	return out;
 }
+
 
